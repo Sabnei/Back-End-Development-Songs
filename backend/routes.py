@@ -64,8 +64,17 @@ def count():
     return jsonify(count=count), 200
 
 
-@app.route("/song")
+@app.route("/song", methods=["GET"])
 def songs():
     lst_songs = list(db.songs.find({}))
     print(lst_songs[0])
     return jsonify(songs=parse_json(lst_songs)), 200
+
+
+@app.route("/song/<int:id>", methods=["GET"])
+def get_song_by_id(id):
+    song = db.songs.find_one({"id": id})
+    if not song:
+        return jsonify(message="song with id not found"), 404
+
+    return parse_json(song), 200
