@@ -1,3 +1,4 @@
+from unittest import result
 from . import app
 import os
 import json
@@ -92,3 +93,20 @@ def create_song():
 
     insert_id: InsertOneResult = db.songs.insert_one(song_in)
     return {"inserted id": parse_json(insert_id.inserted_id)}, 201
+
+
+@app.route("/song/<int:id>", methods=["PUT"])
+def update_song(id):
+    song_in = request.json
+
+    song = db.songs.find_one({"id": id})
+    if not song:
+        return jsonify(message="song not found"), 404
+
+    updated_data = {"$set": song_in}
+    result = db.songs.update_one({"id": id}, updated_data)
+
+    if result.modified_count == 0:
+        return jsonify(message="song found, but nothing updated"), 200
+    else:
+        return jsonify(parse_json(db.songs.find_one({"id": id}))), 201
