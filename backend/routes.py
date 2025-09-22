@@ -56,3 +56,16 @@ def parse_json(data):
 @app.route("/health")
 def healthz():
     return jsonify(status="OK"), 200
+
+
+@app.route("/count")
+def count():
+    count = db.songs.count_documents({})
+    return jsonify(count=count), 200
+
+
+@app.route("/song")
+def songs():
+    lst_songs = list(db.songs.find({}))
+    print(lst_songs[0])
+    return jsonify(songs=parse_json(lst_songs)), 200
